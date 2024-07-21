@@ -9,6 +9,7 @@ using Auctions.Data;
 using Auctions.Models;
 using Auctions.Data.Services;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Auctions.Controllers
 {
@@ -32,6 +33,7 @@ namespace Auctions.Controllers
         {
             var applicationDbContext = _listingsService.GetAll();
             int pageSize = 3;
+            ViewBag.SearchString = searchString;
             if (!string.IsNullOrEmpty(searchString))
             {
                 applicationDbContext = applicationDbContext.Where(a => a.Title.Contains(searchString));
@@ -96,6 +98,7 @@ namespace Auctions.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(ListingVM listing)
         {
             if (listing.Image != null)
@@ -177,5 +180,21 @@ namespace Auctions.Controllers
 
             return RedirectToAction("MyListings", "Listings");
         }
+
+        // GET: Listings/AuctionWins
+        public async Task<IActionResult> AuctionWins(int? pageNumber)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var auctionWins = _bidsService.GetAll()
+                .Where(bid => bid.IdentityUserId == userId && bid.Listing.IsSold)
+                .Select(bid => bid.Listing)
+                .AsNoTracking();
+
+            int pageSize = 3; // Define the page size
+            var paginatedList = await PaginatedList<Listing>.CreateAsync(auctionWins, pageNumber ?? 1, pageSize);
+
+            return View(paginatedList);
+        }
+
     }
 }

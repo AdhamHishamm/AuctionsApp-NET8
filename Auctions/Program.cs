@@ -1,8 +1,10 @@
+using System.Security.Claims;
 using Auctions.Data;
 using Auctions.Data.Services;
 using Auctions.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,15 +14,29 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false; // Disable account confirmation
     options.SignIn.RequireConfirmedEmail = false;   // Disable email confirmation
+
 })
+.AddRoles<IdentityRole>() //HERE IS THE ERRORRRR
 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+//builder.Services.AddRazorPages();
+
+
+builder.Services.AddRazorPages(options =>
+{
+    options.Conventions.AuthorizePage("/Listings/Create", "Admin");
+    options.Conventions.AuthorizePage("/Listings/MyListings", "Admin");
+});
 
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddScoped<IListingsService, ListingsService>();
 builder.Services.AddScoped<ICommentsService, CommentsService>();

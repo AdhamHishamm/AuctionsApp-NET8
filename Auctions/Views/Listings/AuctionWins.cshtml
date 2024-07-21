@@ -1,0 +1,57 @@
+﻿@model PaginatedList<Auctions.Models.Listing>
+
+@{
+    ViewData["Title"] = "Auction Wins";
+}
+
+<h2>Auction Wins</h2>
+
+@if (Model != null && Model.Any())
+{
+    @foreach (var item in Model)
+    {
+        <div class="container" style="background-color: rgba(200, 200, 200, 0.6); margin-top:50px; margin-bottom: 50px; padding: 20px; border-radius:10px;">
+            <div class="row">
+                <div class="col col-xs-6 col-lg-5">
+                    <img src="~/Images/@item.ImagePath" style="max-width: 400px; max-height: 400px;" />
+                </div>
+                <div class="col col-xs-6 col-lg-7">
+                    <h5 style="font-family: 'Verdana', sans-serif; font-size: 18px; font-weight: bold;">
+                        @item.Title
+                    </h5>
+                    <div>@Html.Raw(item.Description.Replace("\n", "<br />"))</div>
+                    <br />
+                    <span>Final Bid Date: @item.EndDate</span>
+                    <div>Price: $@item.Price.ToString("N0")</div>
+                    <br />
+                    <div>Listed by: @item.User.Email</div>
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <p>No items won yet.</p>
+}
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<div class="d-flex justify-content-center">
+    <a asp-action="AuctionWins"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
+       class="btn btn-default @prevDisabled">
+        Previous
+    </a>
+    <div class="btn" style="cursor: default">
+        Page @Model.PageIndex of @Model.TotalPages
+    </div>
+    <a asp-action="AuctionWins"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
+       class="btn btn-default @nextDisabled">
+        Next
+    </a>
+</div>

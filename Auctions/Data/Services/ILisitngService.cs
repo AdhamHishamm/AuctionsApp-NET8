@@ -9,8 +9,8 @@ namespace Auctions.Data.Services
         Task<Listing> GetById(int? id);
         Task SaveChanges();
 
-        Task CloseExpiredListings(); //NEW
-        Task CloseBiddingById(int id); //NEW
+        Task CloseExpiredListings(); 
+        Task CloseBiddingById(int id); 
 
         Task DeleteAsync(Listing listing);
 

@@ -34,33 +34,53 @@
     }
 }
 
-<h4 style="text-align:center">@Model.Title</h4>
-<div class="container" style="background-color: rgba(138, 129, 133, 0.6); margin-top: 50px; margin-bottom: 50px; padding: 20px; border-radius:10px;">
+<h4 style=" text-align:center; font-family: 'Verdana', sans-serif; font-size: 25px; font-weight: bold; margin-left: -80px;">@Model.Title</h4>
+<div class="container" style="background-color: rgba(200, 200, 200, 0.6); margin-top: 50px; margin-bottom: 50px; padding: 20px; border-radius:10px;">
     <div class="row">
         <div class="col col-xs-6 col-lg-5">
             <img src="~/Images/@Model.ImagePath" style="width: 100%; max-height: 60vh;" />
         </div>
-        <div class="col col-xs-6 col-lg-7">           
-            <div>@Model.Description</div>
-            @if(User.Identity.IsAuthenticated)
+        <div class="col col-xs-6 col-lg-7">
+            <div>@Html.Raw(Model.Description.Replace("\n", "<br />"))</div>
+            @if (User.Identity.IsAuthenticated)
             {
                 <form asp-action="AddBid" method="post">
-                    <div>
-                        Bid: $ <input type="number" min="@Model.Price" step="1" name="Price" placeholder="@Model.Price.ToString("N0")"/>
-                        <input type="hidden" name="IdentityUserId" class="form-control" value="@userManager.GetUserId(User)"/>
-                        <input type="hidden" name="ListingId" class="form-control" value="@Model.Id" />
-                        <input type="submit" class="btn btn-primary">
-                    </div>
+                        
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <div>
+                                <br />
+                                <span>Final Bid Date: @Model.EndDate</span>
+                                <br />
+                                <span>Bid: $@Model.Price.ToString("N0")</span>
+                                <input type="hidden" name="IdentityUserId" class="form-control" value="@userManager.GetUserId(User)" />
+                                <input type="hidden" name="ListingId" class="form-control" value="@Model.Id" />
+                            </div>
+                        }
+                        else
+                        {
+                            <div>
+                                <br />
+                                <span>Final Bid Date: @Model.EndDate</span>
+                                <br />
+                                Bid: $ <input type="number" min="@Model.Price" step="1" name="Price" placeholder="@Model.Price.ToString("N0")" />
+                                <input type="hidden" name="IdentityUserId" class="form-control" value="@userManager.GetUserId(User)" />
+                                <input type="hidden" name="ListingId" class="form-control" value="@Model.Id" />
+                                <input type="submit" class="btn btn-primary">
+                            </div>
+                        }
                 </form>
-                <p>Bids submitted: @Model.Bids.Count</p>
-                <br>
+                <br/>
+                <span>Bids submitted: @Model.Bids.Count</span>
+                <br/>
                 @if(userManager.GetUserId(User) == Model.User.Id)
                 {
                     @foreach(var bid in Model.Bids)
                     {
-                        <ul style="list-style-type: none;">
+                        <span style="list-style-type: none;">
                             @bid.User.UserName bidded $@bid.Price.ToString("N0")
-                        </ul>
+                        </span>
+                        <br/>
                     }
                 }
             }
@@ -73,6 +93,7 @@
                 <p>Bids submitted: @Model.Bids.Count</p>
             }
 
+            <br/>
             <div>Listed by: @Model.User.UserName</div>
 
             @if (User.Identity.IsAuthenticated)

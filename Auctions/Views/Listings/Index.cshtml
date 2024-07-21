@@ -8,15 +8,23 @@
 
 @foreach(var listing in Model)
 {
-    <div class="container" style="background-color: rgba(138, 129, 133, 0.6); margin-top:50px; margin-bottom: 50px; padding: 20px; border-radius:10px;">
+    <div class="container" style="background-color: rgba(200, 200, 200, 0.6); margin-top:50px; margin-bottom: 50px; padding: 20px; border-radius:10px;">
         <div class="row">
             <div class="col col-xs-6 col-lg-5">
                 <img src="~/Images/@listing.ImagePath" style="max-width: 400px; max-height: 400px;" />
             </div>
             <div class="col col-xs-6 col-lg-7">
-                <h5><a asp-action="Details" asp-route-id="@listing.Id" style="color: black;">@listing.Title</a></h5>
-                <div>@listing.Description</div>
+                <h5 style="font-family: 'Verdana', sans-serif; font-size: 18px; font-weight: bold;">
+                    <a asp-action="Details" asp-route-id="@listing.Id" style="color: black; text-decoration: none; border-bottom: 2px solid black;">
+                        @listing.Title
+                    </a>
+                </h5>
+                <div>@Html.Raw(listing.Description.Replace("\n", "<br />"))</div>
+                <br />
+                <span>Final Bid Date: @listing.EndDate</span>
+                <br />
                 <div>Bid: $@listing.Price.ToString("N0")</div>
+                <br/>
                 <div>Listed by: @listing.User.Email</div>
             </div>
         </div>
